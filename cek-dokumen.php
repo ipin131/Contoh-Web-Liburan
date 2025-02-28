@@ -4,6 +4,8 @@ require_once('function/koneksi.php');
 
 session_start();
 
+$direktori = "uploads/";
+
 $page = isset($_GET['page']) ? ($_GET['page']) : false;
 if($_SESSION['id_user'] == null){
   header("location: " . BASE_URL);
@@ -13,11 +15,9 @@ if($_SESSION['id_user'] == null){
 <!DOCTYPE html>
 <html>
 <head>
-    <title>User List</title>
+    <title>Cek Dokumen</title>
     <link rel="icon" href="img/logo_airnavsub.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/css/adminlte.min.css">
-    <link rel="stylesheet" href="dist/sweetalert2.all.min.js">
-    <script src="dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/js/adminlte.min.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="jquery/jquery-3.7.1.min.js"></script>
@@ -481,7 +481,7 @@ select{
 <body>
     <header>
     </a>
-    <h1>User List</h1>
+    <h1>User Dokumen</h1>
 </header>
     <div class="datetime">
   <div class="date">
@@ -543,172 +543,128 @@ setInterval(updateDateTime, 1000);
     </ul>
     <h4>© Copyright 2024 by AirNav Cabang Surabaya</h4>
     </nav>
-    <div class="popup" id="popup-1">
-            <div class="overlay"></div>
-            <div class="content">
-                <div class="close-btn" onclick="togglePopup()">&times;</div>
-                <h2>Tambah akun</h2>
-                <form method="post" action="">
-                <div class="input-group">
-                    <input type="text" name="nama" class="input"autocomplete="off" required>
-                    <label class="label">Nama lengkap</label>
-                    </div>
-                    <div class="input-group">
-                    <input type="text" name="username" class="input" autocomplete="off" required>
-                    <label class="label">Initial</label>
-                    </div>
-                    <div class="input-group">
-                    <input type="password" name="password" class="input" autocomplete="off" required>
-                    <label class="label">Password</label>
-                    </div>
-                    <div class="input-group">
-                    <label class="label-1">Role</label>
-                    <select id="role" class="select" name="role">
-                    <option>ATC</option>
-                    <option>admin</option>
-                    </select>
-                    </div>
-                    <input type="submit" class="tombol-login" value="Submit" name="submit">
-                    </form>
-            </div>
-        </div>
     <div class="list">
-        <button onclick="togglePopup()" class="btn-add">Tambah akun</button>
         <input type="text" name="search" id="search" class="srch" placeholder="Search..." autocomplete="off">
+        <br>
+        <br>
         <table class="table" id="myTable">
           <thead>
             <tr>
-                <th>ID</th>
-                <th>Nama Lengkap</th>
-                <th>Initial</th>
-                <th>Role</th>
-                <th>Action</th>
+                <th>Nama</th>
+                <th>License</th>
+                <th>IELP</th>
+                <th>Medex</th>
+                <th>Rating</th>
             </tr>
             </thead>
             <tbody>
-                 <?php
-                 $query = mysqli_query($koneksi,"SELECT * FROM user ORDER by id_user");
-                 $i = 1;
-                 while($row = mysqli_fetch_assoc($query)){
-                  ?>
-                  <tr>
-                  <td>
-                      <?=$i++?>
-                  </td>
-                  <td>
-                      <?=htmlspecialchars($row['nama'])?>
-                  </td>
-                  <td>
-                      <?=htmlspecialchars($row['username'])?>
-                  </td>
-                  <td>
-                      <?=htmlspecialchars($row['role'])?>
-                  </td>
-                  <td>
-                      <button type="button" onclick="toggleThePopup(<?=$row['id_user']?>)" class="btn" value="<?=$row['id_user']?>"> Edit</button>
-                      <button type="button" id="btn-<?=$row['id_user']?>" class="hps" onclick="toggleDelete(<?=$row['id_user']?>)" value="<?=$row['id_user']?>">Hapus Akun </button>
-                      </td>
-                  <?php
-                 }
-                 ?>
-                  </tr>
+            <?php
+    $query = mysqli_query($koneksi, "SELECT * FROM user ORDER BY id_user");
+    while ($row = mysqli_fetch_assoc($query)) {
+
+        if ($row['role'] === 'admin') {
+            continue;
+        }
+        ?>
+    <tr>
+        <td>
+            <?= htmlspecialchars($row['nama']) ?>
+        </td>
+        <td>
+            <?php
+            $id_user = $row['id_user'];
+
+            $license_query = mysqli_query($koneksi, "SELECT license FROM files WHERE id_user = " . $id_user);
+            $result = mysqli_num_rows($license_query);
+
+            if ($result > 0) {
+                while ($file_row = mysqli_fetch_array($license_query)) {
+                    $file_name = $file_row['license'];
+                    if ($file_name !== null) { 
+                        echo '<a href="' . htmlspecialchars($direktori . $file_name) . '" target="_blank">' . htmlspecialchars($file_name) . '</a>';
+                    } else{
+                      echo "File belum di upload";
+                    }
+                }
+            } else {
+                echo "File belum di upload";
+            }
+            ?>
+        </td>
+
+              <td>
+              <?php
+            $id_user = $row['id_user'];
+
+            $ielp_query = mysqli_query($koneksi, "SELECT ielp FROM files WHERE id_user = " . $id_user);
+            $result = mysqli_num_rows($license_query);
+
+            if ($result > 0) {
+                while ($file_row = mysqli_fetch_array($ielp_query)) {
+                    $file_name = $file_row['ielp'];
+                    if ($file_name !== null) { 
+                        echo '<a href="' . htmlspecialchars($direktori . $file_name) . '" target="_blank">' . htmlspecialchars($file_name) . '</a>';
+                    }else{
+                      echo "File belum di upload";
+                    }
+                }
+            } else {
+                echo "File belum di upload";
+            }
+            ?>
+
+              <td>
+              <?php
+            $id_user = $row['id_user'];
+
+            $medex_query = mysqli_query($koneksi, "SELECT medex FROM files WHERE id_user = " . $id_user);
+            $result = mysqli_num_rows($license_query);
+
+            if ($result > 0) {
+                while ($file_row = mysqli_fetch_array($medex_query)) {
+                    $file_name = $file_row['medex']; 
+                    if ($file_name !== null) {
+                        echo '<a href="' . htmlspecialchars($direktori . $file_name) . '" target="_blank">' . htmlspecialchars($file_name) . '</a>';
+                    }else{
+                      echo "File belum di upload";
+                    }
+                }
+            } else {
+                echo "File belum di upload";
+            }
+            ?>
+
+              <td>
+              <?php
+            $id_user = $row['id_user'];
+
+            $rate_query = mysqli_query($koneksi, "SELECT rating FROM files WHERE id_user = " . $id_user);
+            $result = mysqli_num_rows($license_query);
+
+            if ($result > 0) {
+                while ($file_row = mysqli_fetch_array($rate_query)) {
+                    $file_name = $file_row['rating'];
+                    if ($file_name !== null) {
+                        echo '<a href="' . htmlspecialchars($direktori . $file_name) . '" target="_blank">' . htmlspecialchars($file_name) . '</a>';
+                    }else{
+                      echo "File belum di upload";
+                    }
+                }
+            } else {
+                echo "File belum di upload";
+            }
+            ?>
+              </td>
+
+              </tr>
+              <?php
+          }
+          ?>
                  </tbody>
                 </table>
               </div>
-    <?php
-    $query = mysqli_query($koneksi, "SELECT * FROM user");
-    while($row = mysqli_fetch_array($query)){
-    
-    ?>
-<div class="popup" id="popup2-<?=$row['id_user']?>">
-    <div class="overlay"></div>
-    <div class="content-2">
-        <div class="close-btn" onclick="toggleThePopup(<?=$row['id_user']?>)">&times;</div>
-        <h2>Edit akun</h2>
-        <form method="post" action="">
-            <input type="hidden" name="id" value="<?=$row['id_user']?>">
-            <div class="input-group">
-                <label class="label-1">Nama lengkap</label>
-                <input type="text" name="nama" value="<?= $row['nama'] ?>" class="input" autocomplete="off">
-            </div>
-            <div class="input-group">
-                <label class="label-1">Initial</label>
-                <input type="text" name="username" value="<?= $row['username'] ?>" class="input" autocomplete="off">
-            </div>
-            <div class="input-group">
-                <input type="hidden" name="password" value="<?= $row['password'] ?>" class="input" autocomplete="off">
-            </div>
-            <div class="input-group">
-                <label class="label-1">Role</label>
-                <select id="role" class="select" name="role">
-                    <option><?=$row['role']?></option>
-                    <option>
-                        <?php if($row['role'] == 'ATC'){ 
-                          echo 'admin'; 
-                          } else if($row['role'] == 'admin'){ 
-                          echo 'ATC'; }
-                           ?>
-                    </option>
-                </select>
-            </div>
-            <input type="submit" class="btn-edit-popup" value="Edit" name="send">
-        </form>
-    </div>
-</div>
-<script>
-    function toggleDelete(id) {
-        const btn = document.getElementById("btn-" + id);
-        btn.addEventListener('click', function () {
-            Swal.fire({
-                title: "Anda Yakin?",
-                text: "Anda tidak bisa mengembalikannya!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "d33",
-                confirmButtonText: "Ya, hapus"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch('process/hapus-admin.php?id=' + id,{
-                      method: 'GET'
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                      if(data.success){
-                        Swal.fire({
-                          title: 'Sukses!',
-                          text: 'Akun berhasil dihapus!',
-                          icon: 'success',
-                        }).then(() => {
-                          window.location = 'user-list.php?page=21232f297a57a5a743894a0e4a801fc3';
-                        });
-                      }
-                    })
-                }
-            });
-        });
-    }
-</script>        
-                </form>
-                <?php
-    }
-    ?>
-            </div>
-        </div>
 </body>
 </html>
-
-<script>
-    function togglePopup(){
-    document.getElementById("popup-1").classList.toggle("active");
-}
-</script>
-<script>
-function toggleThePopup(id){
-  var popup = document.getElementById("popup2-"+id);
-  popup.classList.toggle("active");
-}
-</script>
 
 <script type="text/javascript">
   $(document).ready(function(){
@@ -735,64 +691,3 @@ function toggleThePopup(id){
     }
   });
 </script>
-
-<?php
-
-if(isset($_POST['submit'])){
-    $nama = $_POST['nama'];
-    $username = $_POST['username'];
-    $password = md5($_POST['password']);
-    $role = $_POST['role'];
-
-    $query = mysqli_query($koneksi, "INSERT INTO user(nama,username,password,role) values('$nama','$username','$password','$role')");
-    if($query){
-      
-    echo 
-    "<script>
-    Swal.fire({
-        title: 'Sukses!',
-        text: 'Akun berhasil dibuat!',
-        icon: 'success',
-        }).then((result) => {
-        if (result.isConfirmed) {
-            window.location = 'user-list.php?page=21232f297a57a5a743894a0e4a801fc3';
-            }
-        });
-</script>";
-}else{
-  echo "Failed: " . mysqli_error($koneksi);
-}
-}
-
-if(isset($_POST['send'])){
-  $id = $_POST['id'];
-  $nama = $_POST['nama'];
-  $username = $_POST['username'];
-  $password = $_POST['password'];
-  $role = $_POST['role'];
-
-
-  //update data ke database
-  $query = mysqli_query($koneksi, "UPDATE user SET nama ='$nama', username ='$username', password ='$password', role ='$role' WHERE id_user = '$id' ");
-
-  //pengalihan
-  if($query){
-
-    echo
-    "<script>
-    Swal.fire({
-        title: 'Berhasil!',
-        text: 'Edit akun user berhasil!',
-        icon: 'success',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location = 'user-list.php?page=21232f297a57a5a743894a0e4a801fc3';
-        }
-      });
-    </script>";
-  }else{
-    echo "Failed: " . mysqli_error($koneksi);
-}
-}
-
-?>

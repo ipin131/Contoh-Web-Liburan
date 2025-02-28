@@ -15,7 +15,7 @@ if($_SESSION['id_user'] == null){
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pengaturan Akun</title>
+    <title>Pengaturan Cuti</title>
     <link rel="icon" href="img/logo_airnavsub.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="dist/sweetalert2.all.min.js">
@@ -618,7 +618,7 @@ setInterval(updateDateTime, 1000);
       <h2>Slot Cuti</h2>
       <form action="" method="post">
         <div class="periode-1">
-        <p>Periode 1:</p>
+        <p>Periode:</p>
         <input type="date" name="mulai" value="<?php echo $rows['start_date']?>"> -
         <input type="date" name="sampai" value="<?php echo $rows['end_date']?>">
         <p>Jumlah Personil:</p>

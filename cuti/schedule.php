@@ -30,7 +30,6 @@ $msg="";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuti</title>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
-    <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="fullcalendar/lib/main.min.css">
     <script src="jscal/jquery-3.6.0.min.js"></script>
     <script src="jscal/bootstrap.min.js"></script>
@@ -620,6 +619,10 @@ setInterval(updateDateTime, 1000);
 </svg>Edit Cuti</a></li>
 </ul>
 </li>
+<li><a href="../upload-file.php?page=a3ac61932ac17091f7b6c0b56618a5b4"><svg xmlns="http://www.w3.org/2000/svg" style="margin-right:5px;" width="20" height="20" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+  <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z"/>
+</svg>Upload File</a></li>
 </ul>
     <li><a href="../settings.php?page=<?= md5($_SESSION['role'])?>"> <svg xmlns="http://www.w3.org/2000/svg" style="margin-right:5px;" width="20" height="20" fill="currentColor" class="bi bi-person-fill-gear" viewBox="0 0 16 16">
   <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-9 8c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4m9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382zM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"/>
@@ -675,29 +678,32 @@ setInterval(updateDateTime, 1000);
                 <span class="info-box-number">
                 <?php
 
+                // Ambil data dari tabel slot
                 $tanggal = mysqli_query($koneksi, "SELECT * FROM slot");
                 $kolom = mysqli_fetch_array($tanggal);
 
                 $tanggal_mulai = $kolom['start_date']; 
                 $tanggal_akhir = $kolom['end_date']; 
 
-                $sisa = mysqli_query($koneksi, "SELECT * FROM slot");
-                $roww = mysqli_fetch_array($sisa);
+                // Ambil jumlah slot
+                $jumlah_slot = $kolom['day'];
 
-                $jumlah_slot = $roww['day'];
-
+                // Inisialisasi hasil
                 $hasil = [];
 
+                // Buat objek DateTime untuk tanggal mulai dan akhir
                 $startDate = new DateTime($tanggal_mulai);
                 $endDate = new DateTime($tanggal_akhir);
 
+                // Ambil tanggal hari ini
                 $tanggal_hari_ini = date('Y-m-d');
 
+                // Loop melalui rentang tanggal
                 for ($date = $startDate; $date <= $endDate; $date->modify('+1 day')) {
                     $tanggal_sekarang = $date->format('Y-m-d');
 
-                    // Hitung jumlah pengajuan cuti dalam rentang tanggal
-                    $sql = mysqli_query($koneksi, "SELECT COUNT(*) as jumlah_submit FROM cuti WHERE DATE(datestart) BETWEEN '$tanggal_mulai' AND '$tanggal_akhir'");
+                    // Hitung jumlah pengajuan cuti untuk tanggal saat ini
+                    $sql = mysqli_query($koneksi, "SELECT COUNT(*) as jumlah_submit FROM cuti WHERE DATE(datestart) <= '$tanggal_sekarang' AND DATE(dateend) >= '$tanggal_sekarang'");
                     $row = mysqli_fetch_array($sql);
 
                     // Jika tidak ada pengajuan cuti, set jumlah_submit ke 0
@@ -705,10 +711,6 @@ setInterval(updateDateTime, 1000);
 
                     // Hitung jumlah slot tersisa
                     $jumlah_slot_tersisa = $jumlah_slot - $jumlah_submit;
-
-                    if ($jumlah_slot_tersisa < 0) {
-                        $jumlah_slot_tersisa = 0;
-                    }
 
                     // Jika tanggal sekarang adalah hari ini, simpan hasilnya
                     if ($tanggal_sekarang === $tanggal_hari_ini) {
@@ -950,9 +952,9 @@ while(mysqli_fetch_array($query)){
   <div class="close-btn" onclick="toggleThepopup()" id="close-popup">&times;</div>
     <h2>Ajuan Cuti</h2>
     <p>Nama:</p>
-    <input type="text" style="margin-left:-37vh;" name="nama" value="<?php echo $_SESSION['nama']?>">
+    <input type="text" style="margin-left:-37vh;" name="nama" value="<?php echo $_SESSION['nama']?>" readonly>
     <p>Initial:</p>
-    <input type="text" style="margin-left:-37vh;" name="username" value="<?php echo $_SESSION['username']?>">
+    <input type="text" style="margin-left:-37vh;" name="username" value="<?php echo $_SESSION['username']?>" readonly>
     <p>Cuti dari tanggal:</p>
     <input type="date" style="margin-left:-30vh;" id="date-input" name="datestart" required>
     <p>Sampai tanggal:</p>
@@ -1144,3 +1146,4 @@ if (isset($_POST['kirim'])) {
     }
 }
 ?>
+

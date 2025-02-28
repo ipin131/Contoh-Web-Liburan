@@ -6,6 +6,8 @@ require_once('../function/koneksi.php');
 $username = $_POST['username'];
 $password = md5($_POST['password']);
 
+session_start();
+
 
 //var_dump($password);
 //die();
@@ -35,6 +37,7 @@ if(mysqli_num_rows($query) != 0){
     }
 
 }else{
-    header("location: ../swal/swal-login-salah.html");
+    $_SESSION['login_error'] = "Username atau password salah.";
+    header("Location: ../index.php");
 }
 ?>

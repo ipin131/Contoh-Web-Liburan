@@ -443,65 +443,6 @@ setInterval(updateDateTime, 1000);
 </script>
   </div>
       
-<div class="file">
-  <h2> Upload File </h2>
-
-  <table>
-    <thead>
-        <tr>
-            <th style="width: 50px;">No</th> <!-- Set a fixed width for the number column -->
-            <th>Upload Berkas Kesehatan</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-      <form id="uploadForm" action="" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="id_user" value="<?php $_SESSION['id_user']?>">
-            <tr>
-                <td>1</td>
-                <td>
-                   <input type="file" name="file" accept=".pdf">
-                </td>
-                <td>
-                    <button type="button" class="btn" onclick="viewFile('<?= htmlspecialchars($row['file_path']) ?>')">View</button>
-                    <button type="button" class="hps" onclick="deleteFile(<?= $row['id'] ?>)">Delete</button>
-                </td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>
-                   <input type="file">
-                </td>
-                <td>
-                    <button type="button" class="btn" onclick="viewFile('<?= htmlspecialchars($row['file_path']) ?>')">View</button>
-                    <button type="button" class="hps" onclick="deleteFile(<?= $row['id'] ?>)">Delete</button>
-                </td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>
-                   <input type="file">
-                </td>
-                <td>
-                    <button type="button" class="btn" onclick="viewFile('<?= htmlspecialchars($row['file_path']) ?>')">View</button>
-                    <button type="button" class="hps" onclick="deleteFile(<?= $row['id'] ?>)">Delete</button>
-                </td>
-            </tr>
-            <tr>
-                <td>4</td>
-                <td>
-                   <input type="file">
-                </td>
-                <td>
-                    <button type="button" class="btn" onclick="viewFile('<?= htmlspecialchars($row['file_path']) ?>')">View</button>
-                    <button type="button" class="hps" onclick="deleteFile(<?= $row['id'] ?>)">Delete</button>
-                </td>
-            </tr>
-    </tbody>
-</table>
-    <input type="submit" name="send" class="btn" value="Upload">
-  </form>
-</div>
 </body>
 </html>
 

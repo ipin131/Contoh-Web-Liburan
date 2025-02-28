@@ -2,6 +2,8 @@
 include_once('function/koneksi.php');
 session_start();
 
+$direktori = "uploads/";
+
 
 $page = isset($_GET['page']) ? ($_GET['page']) : false;
 if($_SESSION['id_user'] == null){
@@ -300,16 +302,75 @@ table{
 
 th{
     border:2px solid lightgrey;
-    padding:10px;
+    padding:5px;
     font-size:20px;
     position: relative;
 }
 
 td{
     border:2px solid lightgrey;
-    padding:10px;
+    padding:5px;
     font-size:20px;
     position: relative;
+}
+
+.popup .overlay{
+    position:fixed;
+    top:0px;
+    left:0px;
+    width:100vw;
+    height:100vh;
+    background: rgba(0,0,0,0.5);
+    z-index:1;
+    display: none;
+}
+
+.popup .content{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: #fff;
+    width:450px;
+    height:80%;
+    z-index:2;
+    padding:20px;
+    box-sizing: border-box;
+    text-align: center;
+    border-radius:4px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+
+.popup .close-btn{
+    position: absolute;
+    right:20px;
+    top:20px;
+    width: 30px;
+    height:30px;
+    background: #222;
+    color:#fff;
+    font-size:25px;
+    font-weight:600;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%;
+    cursor:pointer;
+}
+
+.popup.active .overlay{
+    display:block;
+}
+
+.popup.active .content{
+    transition: all 300ms ease-in-out;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+input[type="text"]{
+  text-decoration: none;
+  border:none;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -385,98 +446,241 @@ setInterval(updateDateTime, 1000);
   <table>
     <thead>
         <tr>
-            <th>Upload Berkas</th>
-            <th>Action</th>
+            <th>Nama</th>
+            <th>License</th>
+            <th>IELP</th>
+            <th>MEDEX</th>
+            <th>Rating</th>
+            <th>Action</th>            
         </tr>
     </thead>
     <tbody>
-      <form action="" method="post" enctype="multipart/form-data">
       <input type="hidden" name="id" value="<?php echo $_SESSION['id_user']?>">
-        <?php for ($i = 1; $i <= 5; $i++); ?>
             <tr>
-                <td>
-                <input type="file" name="NamaFile" accept=".pdf">
-                </td>
+                <td><?php echo $_SESSION['nama'];?></td>
                 <td>
                 <?php
-                            $query = $koneksi->query("SELECT * FROM files WHERE id_user = '" . $_SESSION['id_user'] . "' AND file_name = 'file$i.pdf'");
-                            if ($query->num_rows > 0): ?>
-                                <button type="button" class="btn" onclick="window.open('<?= $targetDir . 'file' . $i . '.pdf'; ?>', '_blank')">View</button>
-                            <?php else: ?>
-                                <span>No file uploaded</span>
-                            <?php endif; ?>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                <input type="file" name="file<?= $i; ?>" accept=".pdf">
-                </td>
-                <td>
-                <?php
-                            $query = $koneksi->query("SELECT * FROM files WHERE id_user = '" . $_SESSION['id_user'] . "' AND file_name = 'file$i.pdf'");
-                            if ($query->num_rows > 0): ?>
-                                <button type="button" class="btn" onclick="window.open('<?= $targetDir . 'file' . $i . '.pdf'; ?>', '_blank')">View</button>
-                            <?php else: ?>
-                                <span>No file uploaded</span>
-                            <?php endif; ?>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                <input type="file" name="file<?= $i; ?>" accept=".pdf">
-                </td>
-                <td>
-                <?php
-                            $query = $koneksi->query("SELECT * FROM files WHERE id_user = '" . $_SESSION['id_user'] . "' AND file_name = 'file$i.pdf'");
-                            if ($query->num_rows > 0): ?>
-                                <button type="button" class="btn" onclick="window.open('<?= $targetDir . 'file' . $i . '.pdf'; ?>', '_blank')">View</button>
-                            <?php else: ?>
-                                <span>No file uploaded</span>
-                            <?php endif; ?>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                <input type="file" name="file<?= $i; ?>" accept=".pdf">
-                </td>
-                <td>
-                <?php
-                            $query = $koneksi->query("SELECT * FROM files WHERE id_user = '" . $_SESSION['id_user'] . "' AND file_name = 'file$i.pdf'");
-                            if ($query->num_rows > 0): ?>
-                                <button type="button" class="btn" onclick="window.open('<?= $targetDir . 'file' . $i . '.pdf'; ?>', '_blank')">View</button>
-                            <?php else: ?>
-                                <span>No file uploaded</span>
-                            <?php endif; ?>
-                </td>
+$license = mysqli_query($koneksi, "SELECT license FROM files WHERE id_user = " . $_SESSION['id_user']);
+$result = mysqli_num_rows($license);
+
+if ($result > 0) {
+    while ($row = mysqli_fetch_array($license)) {
+        $file_name = $row['license']; // Pastikan kolom yang diambil sesuai
+        if ($file_name !== null) { // Memastikan $file_name tidak null
+            echo '<a href="' . $direktori . $file_name . '" target="_blank">' . htmlspecialchars($file_name) . '</a>';
+        } else {
+          echo "File belum di upload";
+        }
+    }
+  } else{
+    echo "File belum di upload";
+  }
+?>
+
+              <td>
+              <?php
+$ielp = mysqli_query($koneksi, "SELECT ielp FROM files WHERE id_user = " . $_SESSION['id_user']);
+$result = mysqli_num_rows($ielp);
+
+if ($result > 0) {
+    while ($row = mysqli_fetch_array($ielp)) {
+        $file_name = $row['ielp']; // Pastikan kolom yang diambil sesuai
+        if ($file_name !== null) { // Memastikan $file_name tidak null
+            echo '<a href="' . $direktori . $file_name . '" target="_blank">' . htmlspecialchars($file_name) . '</a>';
+        } else {
+          echo "File belum di upload";
+        }
+    }
+} else{
+  echo "File belum di upload";
+}
+?>
+
+              <td>
+              <?php
+$medex = mysqli_query($koneksi, "SELECT medex FROM files WHERE id_user = " . $_SESSION['id_user']);
+$result = mysqli_num_rows($medex);
+
+if ($result > 0) {
+    while ($row = mysqli_fetch_array($medex)) {
+        $file_name = $row['medex']; // Pastikan kolom yang diambil sesuai
+        if ($file_name !== null) { // Memastikan $file_name tidak null
+            echo '<a href="' . $direktori . $file_name . '" target="_blank">' . htmlspecialchars($file_name) . '</a>';
+        } else {
+          echo "File belum di upload";
+        }
+    }
+} else{
+  echo "File belum di upload";
+}
+?>
+
+              <td>
+              <?php
+$rate = mysqli_query($koneksi, "SELECT rating FROM files WHERE id_user = " . $_SESSION['id_user']);
+$result = mysqli_num_rows($rate);
+
+if ($result > 0) {
+    while ($row = mysqli_fetch_array($rate)) {
+        $file_name = $row['rating']; // Pastikan kolom yang diambil sesuai
+        if ($file_name !== null) { // Memastikan $file_name tidak null
+            echo '<a href="' . $direktori . $file_name . '" target="_blank">' . htmlspecialchars($file_name) . '</a>';
+        } else {
+          echo "File belum di upload";
+        }
+    }
+}else{
+  echo "File belum di upload";
+}
+?>
+              </td>
+
+              <td>
+              <button class="btn" onclick="togglePopup()">Edit</button>
+            </td>
             </tr>
     </tbody>
 </table>
-<br>
-    <input type="submit" name="send" class="btn" value="Upload">
-  </form>
 </div>
+<form action="" method="post" enctype="multipart/form-data">
+<div class="popup" id="popup-1">
+  <div class="overlay"></div>
+  <div class="content">
+  <div class="close-btn" onclick="togglePopup()" id="close-popup">&times;</div>
+    <h2>Upload File</h2>
+    <p>Nama:</p>
+    <input type="text" style="margin-left:-37vh;" name="nama" value="<?php echo $_SESSION['nama']?>" readonly>
+    <p>License</p>
+    <input type="file" style="margin-left:-20vh;" name="license" accept=".pdf"> 
+    <p>IELP</p>
+    <input type="file" style="margin-left:-20vh;" name="ielp" accept=".pdf"> 
+    <p>MEDEX</p>
+    <input type="file" style="margin-left:-20vh;" name="medex" accept=".pdf"> 
+    <p>Rating</p>
+    <input type="file" style="margin-left:-20vh;" name="rate" accept=".pdf"> 
+    <br> <br>
+    <input type="hidden" name="id" value="<?php echo $_SESSION['id_user']?>">
+    <input type="submit" name="kirim" class="btn" value="Kirim" id="btn">
+  </div>
+</div>
+</form>
+
 </body>
 </html>
 
 <?php
-
-if (isset($_POST['send'])) {
+if (isset($_POST['kirim'])) { // Perbaiki di sini
     $id = $_POST['id'];
+    $nama = $_POST['nama'];
     $direktori = "uploads/";
-    $filename = $_FILES['NamaFile']['name'];
 
-    // Pindahkan file ke direktori tujuan
-    if (move_uploaded_file($_FILES['NamaFile']['tmp_name'], $direktori . $filename)) {
-        // Masukkan data ke dalam database
-        $sql = "INSERT INTO files (id_user, file_name, upload_time) VALUES ('$id', '$filename', NOW())";
-        
-        if (mysqli_query($koneksi, $sql)) {
-            echo "<p>File berhasil di upload</p>";
+    // Array untuk menyimpan nama file
+    $files = [
+        'license' => $_FILES['license'],
+        'ielp' => $_FILES['ielp'],
+        'medex' => $_FILES['medex'],
+        'rate' => $_FILES['rate']
+    ];
+
+    // Menyimpan nama file
+    $file_names = [];
+    foreach ($files as $key => $file) {
+        if ($file['error'] === UPLOAD_ERR_OK) {
+            $file_name = basename($file['name']);
+            $file_path = $direktori . $file_name;
+
+            // Cek apakah file sudah ada dan hapus jika ada
+            if (file_exists($file_path)) {
+                unlink($file_path);
+            }
+
+            // Pindahkan file ke direktori tujuan
+            if (move_uploaded_file($file['tmp_name'], $file_path)) {
+                $file_names[$key] = $file_name; // Simpan nama file
+            } else {
+                echo "Gagal mengunggah file " . $file_name;
+            }
         } else {
-            echo "<p>Error: " . mysqli_error($koneksi) . "</p>";
+            // Jika tidak ada file yang diunggah, tetap simpan nilai kosong
+            $file_names[$key] = null;
+        }
+    }
+
+    // Cek apakah file sudah ada di database
+    $cek = mysqli_query($koneksi, "SELECT * FROM files WHERE id_user = '$id'");
+    $hasil = mysqli_num_rows($cek);
+
+    if ($hasil > 0) {
+        // Jika sudah ada, lakukan update
+        $update_query = "UPDATE files SET ";
+        $update_fields = [];
+
+        // Hanya tambahkan kolom yang memiliki file baru
+        if (isset($file_names['license'])) {
+            $update_fields[] = "license = '{$file_names['license']}'";
+        }
+        if (isset($file_names['ielp'])) {
+            $update_fields[] = "ielp = '{$file_names['ielp']}'";
+        }
+        if (isset($file_names['medex'])) {
+            $update_fields[] = "medex = '{$file_names['medex']}'";
+        }
+        if (isset($file_names['rate'])) {
+            $update_fields[] = "rating = '{$file_names['rate']}'";
+        }
+
+        // Gabungkan semua field yang akan diupdate
+        $update_query .= implode(", ", $update_fields);
+        $update_query .= " WHERE id_user = '$id'";
+
+        $replace = mysqli_query($koneksi, $update_query);
+
+        if ($replace) {
+            echo "<script>
+            Swal.fire({
+                title: 'Sukses!',
+                text: 'File berhasil di update! ',
+                icon: 'success',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location = 'upload-file.php?page=a3ac61932ac17091f7b6c0b56618a5b4';
+                }
+            }); 
+            </script>";
+        } else {
+            echo "<script>
+            Swal.fire({
+                title: 'Gagal!',
+                text: 'File gagal di update! " . mysqli_error($koneksi) . "',
+                icon: 'error',
+            });
+            </script>";
         }
     } else {
-        echo "<p>Error: Gagal meng-upload file.</p>";
+        // Jika belum ada, lakukan insert
+        $query = $koneksi->prepare("INSERT INTO files (id_user, nama, license, ielp, medex, rating, upload_time) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+        $query->bind_param("isssss", $id, $nama, $file_names['license'], $file_names['ielp'], $file_names['medex'], $file_names['rate']);
+
+        if ($query->execute()) {
+            echo "<script>
+            Swal.fire({
+                title: 'Sukses!',
+                text: 'File berhasil di upload! ',
+                icon: 'success',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location = 'upload-file.php?page=a3ac61932ac17091f7b6c0b56618a5b4';
+                }
+            }); 
+            </script>";
+        } else {
+            echo "Gagal menyimpan data ke database: " . $query->error;
+        }
     }
 }
 ?>
+<script>
+    function togglePopup(){
+    document.getElementById("popup-1").classList.toggle("active");
+}
+</script>

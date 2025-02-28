@@ -383,29 +383,32 @@ setInterval(updateDateTime, 1000);
                 <span class="info-box-number">
                 <?php
 
+                // Ambil data dari tabel slot
                 $tanggal = mysqli_query($koneksi, "SELECT * FROM slot");
                 $kolom = mysqli_fetch_array($tanggal);
 
                 $tanggal_mulai = $kolom['start_date']; 
                 $tanggal_akhir = $kolom['end_date']; 
 
-                $sisa = mysqli_query($koneksi, "SELECT * FROM slot");
-                $roww = mysqli_fetch_array($sisa);
+                // Ambil jumlah slot
+                $jumlah_slot = $kolom['day'];
 
-                $jumlah_slot = $roww['day'];
-
+                // Inisialisasi hasil
                 $hasil = [];
 
+                // Buat objek DateTime untuk tanggal mulai dan akhir
                 $startDate = new DateTime($tanggal_mulai);
                 $endDate = new DateTime($tanggal_akhir);
 
+                // Ambil tanggal hari ini
                 $tanggal_hari_ini = date('Y-m-d');
 
+                // Loop melalui rentang tanggal
                 for ($date = $startDate; $date <= $endDate; $date->modify('+1 day')) {
                     $tanggal_sekarang = $date->format('Y-m-d');
 
-                    // Hitung jumlah pengajuan cuti dalam rentang tanggal
-                    $sql = mysqli_query($koneksi, "SELECT COUNT(*) as jumlah_submit FROM cuti WHERE DATE(datestart) BETWEEN '$tanggal_mulai' AND '$tanggal_akhir'");
+                    // Hitung jumlah pengajuan cuti untuk tanggal saat ini
+                    $sql = mysqli_query($koneksi, "SELECT COUNT(*) as jumlah_submit FROM cuti WHERE DATE(datestart) <= '$tanggal_sekarang' AND DATE(dateend) >= '$tanggal_sekarang'");
                     $row = mysqli_fetch_array($sql);
 
                     // Jika tidak ada pengajuan cuti, set jumlah_submit ke 0
@@ -413,10 +416,6 @@ setInterval(updateDateTime, 1000);
 
                     // Hitung jumlah slot tersisa
                     $jumlah_slot_tersisa = $jumlah_slot - $jumlah_submit;
-
-                    if ($jumlah_slot_tersisa < 0) {
-                        $jumlah_slot_tersisa = 0;
-                    }
 
                     // Jika tanggal sekarang adalah hari ini, simpan hasilnya
                     if ($tanggal_sekarang === $tanggal_hari_ini) {

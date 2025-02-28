@@ -2,12 +2,16 @@
 require_once('function/helper.php');
 require_once('function/koneksi.php');
 
+session_start();
+
 ?>
 <html>
     <head>
     <meta charset="UTF-8">
         <title>Login</title>
         <link rel="icon" href="img/logo_airnavsub.png">
+        <link rel="stylesheet" href="dist/sweetalert2.all.min.js">
+        <script src="dist/sweetalert2.all.min.js"></script>
         <style>
             body{
             background-color:darkblue;
@@ -185,5 +189,31 @@ require_once('function/koneksi.php');
                 </form>
         </section>
         <p class="p-ftr">© Copyright 2024 by AirNav Cabang Surabaya</p>
+
+        <?php
+        
+        if (isset($_SESSION['login_error'])) {
+            echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Gagal',
+                    text: '" . $_SESSION['login_error'] . "',
+                });
+            </script>";
+            unset($_SESSION['login_error']); // Hapus pesan setelah ditampilkan
+        }
+        ?>
+        <?php
+        if (isset($_SESSION['logout_message'])) {
+            echo "<script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Logout Berhasil',
+                    text: '" . $_SESSION['logout_message'] . "',
+                });
+            </script>";
+            unset($_SESSION['logout_message']); // Hapus pesan setelah ditampilkan
+        }
+        ?>
         </body>
         </html>

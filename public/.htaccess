@@ -1,0 +1,13 @@
+# Mencegah akses ke folder storage dan config
+<Directory "/storage">
+    Require all denied
+</Directory>
+
+# Mencegah akses langsung ke file .env dan file PHP sensitif
+<FilesMatch "(\.env|config\.php|database\.php|app\.php)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Mencegah folder tertentu diakses langsung
+RedirectMatch 403 ^/(storage|bootstrap|config)

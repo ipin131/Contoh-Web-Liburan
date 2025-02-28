@@ -1,9 +1,6 @@
 <?php
 require_once('function/helper.php');
 require_once('function/koneksi.php');
-?>
-<?php
-include "function/koneksi.php";
 
 $msg = "";
 
@@ -14,6 +11,7 @@ $msg = "";
         <title>Daftar</title>
         <link rel="icon" href="img/logo_airnavsub.png">
         <script src="dist/sweetalert2.all.min.js"></script>
+        <link rel="stylesheet" href="dist/sweetalert2.all.min.js">
         <style>
             body{
             background-color:darkblue;
